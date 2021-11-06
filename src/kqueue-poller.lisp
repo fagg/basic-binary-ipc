@@ -3,7 +3,8 @@
 (defparameter *kevent-struct* 
   #+darwin '(:struct kevent64-s)
   #+freebsd '(:struct kevent)
-  #-(or darwin freebsd) (error "Unsupported platform for KQUEUE."))
+  #+openbsd '(:struct kevent)
+  #-(or darwin freebsd openbsd) (error "Unsupported platform for KQUEUE."))
 
 (defgeneric kqueue-descriptor (kqueue-poller)
   (:documentation "The OS descriptor for the KQUEUE."))
@@ -332,3 +333,27 @@
 	      fflags 0
 	      data 0
 	      udata (cffi:null-pointer))))))
+
+#+openbsd
+(progn
+  (defun parse-kevent-struct (kevent-struct-ptr)
+    (cffi:with-foreign-slots ((ident filter flags fflags data udata) kevent-struct-ptr (:struct kevent))
+      (list ident
+	    (cffi:foreign-enum-keyword 'kevent-filters filter)
+	    (remove-if #'(lambda (keyword)
+			   (zerop (logand flags (cffi:foreign-enum-value 'kevent-flags keyword))))
+		       (cffi:foreign-enum-keyword-list 'kevent-flags))
+	    fflags
+	    data 
+	    udata)))
+
+  (defun prepare-kevent-struct (change kevent-struct-ptr)
+    (cffi:with-foreign-slots ((ident filter flags fflags data udata) kevent-struct-ptr (:struct kevent))
+      (destructuring-bind (change-ident change-filter change-flags) change
+	(setf ident change-ident
+	      filter (cffi:foreign-enum-value 'kevent-filters change-filter)
+	      flags (cffi:foreign-enum-value 'kevent-flags change-flags)
+	      fflags 0
+	      data 0
+	      udata (cffi:null-pointer))))))
+

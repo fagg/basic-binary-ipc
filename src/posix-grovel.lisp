@@ -2,6 +2,7 @@
 
 #+linux (define "_GNU_SOURCE" 1)
 #+freebsd (include "sys/types.h")
+#+openbsd (include "sys/types.h")
 
 (include "errno.h")
 
@@ -58,9 +59,15 @@
 
 (include "sys/socket.h")
 
+#-openbsd
 (constantenum (posix-socket-namespace :base-type :int)
   ((:pf-inet "PF_INET"))
   ((:pf-local "PF_LOCAL")))
+#+openbsd
+(constantenum (posix-socket-namespace :base-type :int)
+  ((:pf-inet "AF_INET"))
+  ((:pf-local "AF_UNIX")))
+
 
 (constantenum (posix-socket-type :base-type :int)
   ((:sock-stream "SOCK_STREAM"))
@@ -159,5 +166,6 @@
 
 (constantenum (addrinfo-error-codes :base-type :int)
   ((:eai-noname "EAI_NONAME"))
-  #+linux
+  #+(or linux openbsd)
   ((:eai-nodata "EAI_NODATA")))
+

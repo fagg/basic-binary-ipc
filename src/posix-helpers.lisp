@@ -4,7 +4,9 @@
 
 #+ (or darwin freebsd)
 (cffi:defcfun (%ff-get-errno-pointer "__error") (:pointer :int))
-#+linux
+#+ openbsd
+(cffi:defcfun (%ff-get-errno-pointer "__errno") (:pointer :int))
+#+ linux
 (cffi:defcfun (%ff-get-errno-pointer "__errno_location") (:pointer :int))
 
 (defun %ff-get-errno ()

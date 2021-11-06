@@ -14,7 +14,7 @@
 			:components ((:file "packages")
 				     (:file "protocols")
 				     (:file "system-calls")))
-	       #+(or darwin freebsd linux)
+	       #+(or darwin freebsd openbsd linux)
 	       (:module "src/posix"
 			:serial t
 			:pathname "src"
@@ -24,7 +24,7 @@
 				     (:file "posix-socket-options")
 				     (:file "posix-sockets")
 				     (:file "posix-poll")))	       
-	       #+(or darwin freebsd)
+	       #+(or darwin freebsd openbsd)
 	       (:module "src/kqueue"
 			:serial t
 			:pathname "src"

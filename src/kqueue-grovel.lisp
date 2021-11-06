@@ -19,6 +19,21 @@
     (data "data" :type intptr-t)
     (udata "udata" :type :pointer)))
 
+#+openbsd
+(progn
+  (ctype uintptr-t "uintptr_t")
+  (ctype intptr-t "intptr_t")
+  (ctype u-short "u_short")
+  (ctype u-int "u_int")
+
+  (cstruct kevent "struct kevent"
+    (ident "ident" :type uintptr-t)
+    (filter "filter" :type :short)
+    (flags "flags" :type u-short)
+    (fflags "fflags" :type u-int)
+    (data "data" :type intptr-t)
+    (udata "udata" :type :pointer)))
+
 #+darwin
 (cstruct kevent64-s "struct kevent64_s"
   (ident "ident" :type :uint64)
@@ -37,7 +52,8 @@
 
 (constantenum (kevent-flags :base-type
 			    #+darwin :uint16
-			    #+freebsd u-short)
+			    #+freebsd u-short
+			    #+openbsd u-short)
   ((:ev-add "EV_ADD"))
   ((:ev-enable "EV_ENABLE"))
   ((:ev-disable "EV_DISABLE"))
@@ -48,6 +64,7 @@
 
 (constantenum (kevent-filters :base-type
 			      #+darwin :int16
-			      #+freebsd :short)
+			      #+freebsd :short
+			      #+openbsd :short)
   ((:evfilt-read "EVFILT_READ"))
   ((:evfilt-write "EVFILT_WRITE")))
